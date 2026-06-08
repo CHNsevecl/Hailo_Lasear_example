@@ -1,0 +1,11 @@
+# 创建正确的 .gitignore（排除 dataset 和 runs）
+@"
+dataset/
+runs/
+__pycache__/
+.venv/
+*.pt
+*.pth
+*.onnx
+*.log
+"@ | Out-File -FilePath .gitignore -Encoding utf8
