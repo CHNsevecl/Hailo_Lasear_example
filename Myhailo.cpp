@@ -85,3 +85,117 @@ std::optional<HailoContext> Hailo_init(const std::string& hef_path) {
 
 	return context;
 }
+
+
+std::optional<std::vector<Detection>> ParseDetections(HailoContext& hailo_context, int target_w, int target_h, cv::Mat& RGB_frame,const std::vector<std::string>& class_names) {
+	std::vector<Detection> results;
+
+	if (!RGB_frame.isContinuous()) {//copyTo、Rect等操作可能导致图像数据不连续，克隆一份确保数据连续
+		RGB_frame = RGB_frame.clone();
+	}
+	//流数据处理完毕
+
+	//流数据放入输入内存
+
+	// input_buffers[0].size()                          // 模型输入缓冲区大小（字节）恰好是yolov8s,只有一个输入
+	// resized_rgb.total()                              // 图像像素总数（宽×高）
+	// resized_rgb.elemSize()                           // 每个像素的字节数
+	// resized_rgb.total() * resized_rgb.elemSize()     // 图像数据总大小（字节）
+	if (hailo_context.input_buffer[0].size() != RGB_frame.total() * RGB_frame.elemSize()) {
+		std::cerr << "错误: 摄像头预处理后的输入大小与模型输入不一致" << std::endl;
+		return std::nullopt;
+	}
+
+	std::memcpy(&hailo_context.input_buffer[0][0], RGB_frame.data, hailo_context.input_buffer[0].size());
+	// 这两个是等价的,都是获取第一个元素的指针地址
+	// hailo_context.input_buffer[0].data()
+	// &hailo_context.input_buffer[0][0]
+	
+	auto run_status = hailo_context.configured_infer_model.run(hailo_context.bindings, std::chrono::milliseconds(1000));
+
+	if (run_status != HAILO_SUCCESS) {
+		std::cerr << "错误: 推理执行失败, status=" << run_status << std::endl;
+		return std::nullopt;
+	}
+
+	const float *detections = reinterpret_cast<const float*>(hailo_context.output_buffer[0].data()); // 将输出缓冲按float数组解析
+	const size_t detection_float_count = hailo_context.output_buffer[0].size() / sizeof(float); // 输出里一共有多少个float
+	size_t detection_offset = 0; // 解析游标，每读取一个字段就向后移动
+	const int class_count = 1; // COCO类别数
+	const int max_boxes_per_class = 1; // 每个类别最多100个框
+	const float score_threshold = 0.4f; // 画框阈值
+
+	// NMS BY CLASS 输出布局：每个类别先给 count，再给该类别最多100个框(每框5个float)
+	for (int class_id = 0; class_id < class_count; ++class_id) {
+		if (detection_offset >= detection_float_count) {
+			break;
+		}
+
+		const int box_count = static_cast<int>(detections[detection_offset++]); // 该类别有效框数量
+		for (int box_index = 0; box_index < max_boxes_per_class; ++box_index) {
+			if (detection_offset + 4 >= detection_float_count) {
+				break;
+			}
+
+			const float ymin = detections[detection_offset++]; // 框上边界
+			const float xmin = detections[detection_offset++]; // 框左边界
+			const float ymax = detections[detection_offset++]; // 框下边界
+			const float xmax = detections[detection_offset++]; // 框右边界
+			const float score = detections[detection_offset++]; // 置信度
+
+			// 超过该类别有效数量，或分数太低，则跳过
+			if (box_index >= box_count || score < score_threshold) {
+				continue;
+			}
+
+			// 某些模型给0~1归一化坐标，某些模型给像素坐标；这里做兼容
+			auto to_pixel_x = [&](float value) {
+				return static_cast<int>(value <= 1.5f ? value * target_w : value);
+			};
+			auto to_pixel_y = [&](float value) {
+				return static_cast<int>(value <= 1.5f ? value * target_h : value);
+			};
+
+			const int x1 = std::max(0, std::min(to_pixel_x(xmin), target_w - 1));
+			const int y1 = std::max(0, std::min(to_pixel_y(ymin), target_h - 1));
+			const int x2 = std::max(0, std::min(to_pixel_x(xmax), target_w - 1));
+			const int y2 = std::max(0, std::min(to_pixel_y(ymax), target_h - 1));
+
+			// 非法框（右下在左上之前）直接丢弃
+			if (x2 <= x1 || y2 <= y1) {
+				continue;
+			}
+
+			const std::string label = (class_id >= 0 && class_id < static_cast<int>(class_names.size()))
+				? class_names[class_id]
+				: (std::string("cls ") + std::to_string(class_id));
+
+			Detection det;
+			det.label = label;
+			det.upper = cv::Point(x1, y1);
+			det.lower = cv::Point(x2, y2);
+			det.score = score;
+			results.push_back(det);
+		}
+	}
+	return std::make_optional(results);
+}
+
+cv::Mat Stream_process(const cv::Mat& BGR_frame, int target_w, int target_h){
+	const float scale = std::min(static_cast<float>(target_w) / BGR_frame.cols, static_cast<float>(target_h) / BGR_frame.rows);
+
+	const int new_w = static_cast<int>(BGR_frame.cols * scale);
+	const int new_h = static_cast<int>(BGR_frame.rows * scale);
+	const int x_offset = (target_w - new_w) / 2; // 水平方向偏移
+	const int y_offset = (target_h - new_h) / 2; // 垂直方向偏移
+
+	cv::resize(BGR_frame, BGR_frame, cv::Size(new_w, new_h));
+
+	cv::Mat letterbox_bgr(target_h, target_w, CV_8UC3, cv::Scalar(0, 0, 0));
+	BGR_frame.copyTo(letterbox_bgr(cv::Rect(x_offset, y_offset, new_w, new_h)));
+
+	cv::Mat RGB_frame;
+	cv::cvtColor(letterbox_bgr, RGB_frame, cv::COLOR_BGR2RGB);
+
+	return RGB_frame;
+}
