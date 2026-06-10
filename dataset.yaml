@@ -3,6 +3,6 @@ path: ./dataset
 train: images/train
 val: images/val
 
-nc: 1
+nc: 2
 
-names: ['Blue_Lasear']
+names: ['Blue_Lasear','Canvas']

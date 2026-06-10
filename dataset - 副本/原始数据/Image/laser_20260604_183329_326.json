@@ -1,0 +1,58 @@
+{
+  "version": "4.0.0-beta.7",
+  "flags": {},
+  "checked": false,
+  "shapes": [
+    {
+      "label": "Blue_Lasear",
+      "score": null,
+      "points": [
+        [
+          79.09090909090912,
+          175.25252525252526
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "difficult": false,
+      "shape_type": "point",
+      "flags": {},
+      "attributes": {},
+      "kie_linking": []
+    },
+    {
+      "label": "Canvas",
+      "score": null,
+      "points": [
+        [
+          237.43185078909616,
+          226.52797704447636
+        ],
+        [
+          343.60114777618367,
+          226.52797704447636
+        ],
+        [
+          343.60114777618367,
+          294.96413199426115
+        ],
+        [
+          237.43185078909616,
+          294.96413199426115
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "difficult": false,
+      "shape_type": "rectangle",
+      "flags": {},
+      "attributes": {},
+      "kie_linking": []
+    }
+  ],
+  "imagePath": "laser_20260604_183329_326.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 640,
+  "description": ""
+}

@@ -1,0 +1,28 @@
+{
+  "version": "4.0.0-beta.7",
+  "flags": {},
+  "checked": false,
+  "shapes": [
+    {
+      "label": "Blue_Lasear",
+      "score": null,
+      "points": [
+        [
+          485.65656565656565,
+          463.6363636363636
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "difficult": false,
+      "shape_type": "point",
+      "flags": {},
+      "attributes": {},
+      "kie_linking": []
+    }
+  ],
+  "imagePath": "laser_20260604_180502_159.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 640
+}

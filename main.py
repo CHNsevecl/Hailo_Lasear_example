@@ -19,7 +19,7 @@ def main():
         device=device,
         workers=4,
         lr0=0.01,
-        patience=50,
+        patience=30,
         save=True,
         save_period=10,
         project='runs/train',

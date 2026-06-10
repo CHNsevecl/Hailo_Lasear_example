@@ -1,0 +1,40 @@
+{
+  "version": "4.0.0-beta.7",
+  "flags": {},
+  "checked": false,
+  "shapes": [
+    {
+      "label": "Canvas",
+      "score": null,
+      "points": [
+        [
+          426.67144906743187,
+          379.3256814921091
+        ],
+        [
+          618.6370157819225,
+          379.3256814921091
+        ],
+        [
+          618.6370157819225,
+          515.0502152080345
+        ],
+        [
+          426.67144906743187,
+          515.0502152080345
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "difficult": false,
+      "shape_type": "rectangle",
+      "flags": {},
+      "attributes": {},
+      "kie_linking": []
+    }
+  ],
+  "imagePath": "laser_20260609_090847_386.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 640
+}
