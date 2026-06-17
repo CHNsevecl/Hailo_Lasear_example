@@ -15,7 +15,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-addr2line"
+			"value" : "/usr/bin/addr2line"
 		},
 		{
 			"name" : "CMAKE_AR",
@@ -31,7 +31,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-ar"
+			"value" : "/usr/bin/ar"
 		},
 		{
 			"name" : "CMAKE_BUILD_TYPE",
@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_exampel/build"
+			"value" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)/build"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -139,11 +139,11 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : "No help, variable specified on the command line."
+					"value" : "CXX compiler"
 				}
 			],
-			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-g++"
+			"type" : "STRING",
+			"value" : "/usr/bin/clang++"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER_AR",
@@ -155,11 +155,27 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : "A wrapper around 'ar' adding the appropriate '--plugin' option for the GCC compiler"
+					"value" : "LLVM archiver"
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-gcc-ar-14"
+			"value" : "/usr/bin/llvm-ar-19"
+		},
+		{
+			"name" : "CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "`clang-scan-deps` dependency scanner"
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "/usr/bin/clang-scan-deps-19"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER_RANLIB",
@@ -171,11 +187,11 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : "A wrapper around 'ranlib' adding the appropriate '--plugin' option for the GCC compiler"
+					"value" : "Generate index for LLVM archive"
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-gcc-ranlib-14"
+			"value" : "/usr/bin/llvm-ranlib-19"
 		},
 		{
 			"name" : "CMAKE_CXX_FLAGS",
@@ -267,11 +283,11 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : "No help, variable specified on the command line."
+					"value" : "C compiler"
 				}
 			],
-			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-gcc"
+			"type" : "STRING",
+			"value" : "/usr/bin/clang"
 		},
 		{
 			"name" : "CMAKE_C_COMPILER_AR",
@@ -283,11 +299,27 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : "A wrapper around 'ar' adding the appropriate '--plugin' option for the GCC compiler"
+					"value" : "LLVM archiver"
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-gcc-ar-14"
+			"value" : "/usr/bin/llvm-ar-19"
+		},
+		{
+			"name" : "CMAKE_C_COMPILER_CLANG_SCAN_DEPS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "`clang-scan-deps` dependency scanner"
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "/usr/bin/clang-scan-deps-19"
 		},
 		{
 			"name" : "CMAKE_C_COMPILER_RANLIB",
@@ -299,11 +331,11 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : "A wrapper around 'ranlib' adding the appropriate '--plugin' option for the GCC compiler"
+					"value" : "Generate index for LLVM archive"
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-gcc-ranlib-14"
+			"value" : "/usr/bin/llvm-ranlib-19"
 		},
 		{
 			"name" : "CMAKE_C_FLAGS",
@@ -543,7 +575,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_exampel/build/CMakeFiles/pkgRedirects"
+			"value" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)/build/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -603,7 +635,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_exampel"
+			"value" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -643,7 +675,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-ld"
+			"value" : "/usr/bin/ld"
 		},
 		{
 			"name" : "CMAKE_MAKE_PROGRAM",
@@ -755,7 +787,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-nm"
+			"value" : "/usr/bin/nm"
 		},
 		{
 			"name" : "CMAKE_NUMBER_OF_MAKEFILES",
@@ -783,7 +815,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-objcopy"
+			"value" : "/usr/bin/objcopy"
 		},
 		{
 			"name" : "CMAKE_OBJDUMP",
@@ -799,7 +831,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-objdump"
+			"value" : "/usr/bin/objdump"
 		},
 		{
 			"name" : "CMAKE_PLATFORM_INFO_INITIALIZED",
@@ -863,7 +895,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-ranlib"
+			"value" : "/usr/bin/ranlib"
 		},
 		{
 			"name" : "CMAKE_READELF",
@@ -879,7 +911,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-readelf"
+			"value" : "/usr/bin/readelf"
 		},
 		{
 			"name" : "CMAKE_ROOT",
@@ -1099,7 +1131,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/aarch64-linux-gnu-strip"
+			"value" : "/usr/bin/strip"
 		},
 		{
 			"name" : "CMAKE_TAPI",
@@ -1167,7 +1199,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_exampel/build"
+			"value" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)/build"
 		},
 		{
 			"name" : "HailoCameraApp_IS_TOP_LEVEL",
@@ -1191,7 +1223,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_exampel"
+			"value" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)"
 		},
 		{
 			"name" : "OpenCV_DIR",

@@ -14,18 +14,18 @@
 const int target_w = 640;
 const int target_h = 640;
 const std::vector<std::string> class_names = {"Blue_Laser","Canvas"};
-const std::string hef_path = "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)/build/yolov8s_for_BLasear_V1_2.hef";
+const std::string hef_path = "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)/yolov8s.hef";
 constexpr size_t expected_input = 640*640*3;
 const int max_boxes_per_class = 100; // 每个类别最多100个框
-const float score_threshold = 0.6f; // 画框阈值
+const float score_threshold = 0.65f; // 画框阈值
  
 struct HailoContext {
     std::shared_ptr<hailort::VDevice> vdevice;
     std::shared_ptr<hailort::InferModel> infer_model;
     std::vector<std::string> input_names;
     std::vector<std::string> output_names;
-    std::vector<std::vector<uint8_t>> input_buffer;
-    std::vector<std::vector<uint8_t>> output_buffer;
+    std::vector<hailort::Buffer> input_buffer;  
+    std::vector<hailort::Buffer> output_buffer;  
     hailort::ConfiguredInferModel configured_infer_model;
     hailort::ConfiguredInferModel::Bindings bindings;
 };

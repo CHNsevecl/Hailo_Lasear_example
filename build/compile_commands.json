@@ -1,14 +1,14 @@
 [
 {
-  "directory": "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_exampel/build",
-  "command": "/usr/bin/aarch64-linux-gnu-g++ -isystem /usr/include/opencv4 -g -std=gnu++17 -o CMakeFiles/train.dir/train.cpp.o -c /home/sevecl/Desktop/C/Hailo/hailo_Lasear_exampel/train.cpp",
-  "file": "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_exampel/train.cpp",
+  "directory": "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)/build",
+  "command": "/usr/bin/clang++ -isystem /usr/include/opencv4 -g -std=gnu++17 -o CMakeFiles/train.dir/train.cpp.o -c \"/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)/train.cpp\"",
+  "file": "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)/train.cpp",
   "output": "CMakeFiles/train.dir/train.cpp.o"
 },
 {
-  "directory": "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_exampel/build",
-  "command": "/usr/bin/aarch64-linux-gnu-g++ -isystem /usr/include/opencv4 -g -std=gnu++17 -o CMakeFiles/train.dir/Myhailo.cpp.o -c /home/sevecl/Desktop/C/Hailo/hailo_Lasear_exampel/Myhailo.cpp",
-  "file": "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_exampel/Myhailo.cpp",
+  "directory": "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)/build",
+  "command": "/usr/bin/clang++ -isystem /usr/include/opencv4 -g -std=gnu++17 -o CMakeFiles/train.dir/Myhailo.cpp.o -c \"/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)/Myhailo.cpp\"",
+  "file": "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)/Myhailo.cpp",
   "output": "CMakeFiles/train.dir/Myhailo.cpp.o"
 }
 ]

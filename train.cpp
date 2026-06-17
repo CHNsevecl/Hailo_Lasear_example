@@ -3,6 +3,7 @@
 #include <vector>
 #include "Myhailo.hpp"
 
+// /usr/share/hailo-models/yolov8s_h8l.hef
 int main(){
     setenv("DISPLAY", ":0", 1);
 
@@ -58,7 +59,7 @@ int main(){
                     1                                                           // 线条粗细
                 );
             }
-            if(det.label != "Blue_Laser") {
+            else if(det.label != "Blue_Laser") {
                 cv::rectangle(display_frame, det.upper, det.lower, cv::Scalar(0, 255, 0), 2); // 在检测到的画布位置画一个绿色矩形框
                 cv::putText(display_frame,                                      // 图像
                     det.label + " " + cv::format("%.2f", det.score),                    // 文本内容

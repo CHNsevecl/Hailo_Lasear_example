@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_exampel/build",
-		"source" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_exampel"
+		"build" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)/build",
+		"source" : "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)"
 	},
 	"version" : 
 	{
