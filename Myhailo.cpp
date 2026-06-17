@@ -1,6 +1,54 @@
 #include "Myhailo.hpp"
-
 #include <iostream>
+
+#include <fstream>
+
+
+// 在 run_status == HAILO_SUCCESS 之后插入这段代码
+void SaveOutputToFile(const std::vector<uint8_t>& buffer) {
+    const float* data = reinterpret_cast<const float*>(buffer.data());
+    size_t float_count = buffer.size() / sizeof(float); // 应该等于 1002
+
+    std::ofstream outFile("hailo_debug_output.txt");
+    if (!outFile.is_open()) {
+        std::cerr << "无法创建调试文件！" << std::endl;
+        return;
+    }
+
+    outFile << "--- Hailo NMS Raw Data Dump ---" << std::endl;
+    outFile << "Total floats: " << float_count << std::endl;
+
+    for (int class_id = 0; class_id < 2; ++class_id) {
+        int class_base = class_id * 501;
+        float count = data[class_base];
+
+        outFile << "\n========================================" << std::endl;
+        outFile << "CLASS ID: " << class_id << " | DETECTED COUNT: " << count << std::endl;
+        outFile << "========================================" << std::endl;
+
+        // 记录该类别的所有 100 个框的空间
+        for (int b = 0; b < 100; ++b) {
+            int box_base = class_base + 1 + (b * 5);
+            float ymin = data[box_base + 0];
+            float xmin = data[box_base + 1];
+            float ymax = data[box_base + 2];
+            float xmax = data[box_base + 3];
+            float conf = data[box_base + 4];
+
+            // 无论有没有目标，我们都打印前 5 个，剩下的只打印有分数的
+            if (b < 5 || conf > 0.01f) {
+                outFile << "Box " << std::setw(2) << b << ": "
+                        << "Score: " << std::fixed << std::setprecision(4) << conf << " | "
+                        << "Rect: [" << ymin << ", " << xmin << ", " << ymax << ", " << xmax << "]" 
+                        << (b >= count ? " (Invalid/Padding)" : " (Valid)")
+                        << std::endl;
+            }
+        }
+    }
+
+    outFile.close();
+    // std::cout << "调试数据已保存到 hailo_debug_output.txt" << std::endl;
+}
 
 std::optional<HailoContext> Hailo_init(const std::string& hef_path) {
 	HailoContext context;
@@ -74,14 +122,16 @@ std::optional<HailoContext> Hailo_init(const std::string& hef_path) {
 	}
 
 	context.output_buffer.reserve(context.output_names.size());
+	std::cout << context.output_names.size() << " output buffers will be allocated and bound." << std::endl;
 	for (const auto &name : context.output_names) {
 		const size_t output_size = context.infer_model->output(name)->get_frame_size();
 		context.output_buffer.emplace_back(output_size);
 		context.bindings.output(name)->set_buffer(hailort::MemoryView(context.output_buffer.back().data(), context.output_buffer.back().size()));
 	}
 
-	std::cout << "[Step 2 完成] 模型已配置，输入输出缓冲已绑定。" << std::endl;
 	std::cout << "[Step 1 完成] 设备与模型检查通过。" << std::endl;
+	std::cout << "[Step 2 完成] 模型已配置，输入输出缓冲已绑定。" << std::endl;
+	
 
 	return context;
 }
@@ -111,7 +161,12 @@ std::optional<std::vector<Detection>> ParseDetections(HailoContext& hailo_contex
 	// hailo_context.input_buffer[0].data()
 	// &hailo_context.input_buffer[0][0]
 	
+	std::memset(hailo_context.output_buffer[0].data(), 0xCC, 4008);
+	cv::Mat check_mat(640, 640, CV_8UC3, hailo_context.input_buffer[0].data());
+	cv::imwrite("hailo_input_actual.jpg", check_mat);
+	// std::cout << "已保存硬件输入快照，请检查颜色和形状是否正常" << std::endl;
 	auto run_status = hailo_context.configured_infer_model.run(hailo_context.bindings, std::chrono::milliseconds(1000));
+	SaveOutputToFile(hailo_context.output_buffer[0]); // 调试：将原始输出保存到文件
 
 	if (run_status != HAILO_SUCCESS) {
 		std::cerr << "错误: 推理执行失败, status=" << run_status << std::endl;
@@ -120,33 +175,24 @@ std::optional<std::vector<Detection>> ParseDetections(HailoContext& hailo_contex
 
 	const float *detections = reinterpret_cast<const float*>(hailo_context.output_buffer[0].data()); // 将输出缓冲按float数组解析
 	const size_t detection_float_count = hailo_context.output_buffer[0].size() / sizeof(float); // 输出里一共有多少个float
-	size_t detection_offset = 0; // 解析游标，每读取一个字段就向后移动
-	const int class_count = 1; // COCO类别数
-	const int max_boxes_per_class = 1; // 每个类别最多100个框
-	const float score_threshold = 0.4f; // 画框阈值
+	
 
 	// NMS BY CLASS 输出布局：每个类别先给 count，再给该类别最多100个框(每框5个float)
-	for (int class_id = 0; class_id < class_count; ++class_id) {
-		if (detection_offset >= detection_float_count) {
-			break;
-		}
+	for (size_t class_id = 0; class_id < class_names.size(); ++class_id) {
+		int class_base = class_id * 501; // 绝对基准点
+    	int box_count = static_cast<int>(detections[class_base]); // 该类别有效框数量
 
-		const int box_count = static_cast<int>(detections[detection_offset++]); // 该类别有效框数量
-		for (int box_index = 0; box_index < max_boxes_per_class; ++box_index) {
-			if (detection_offset + 4 >= detection_float_count) {
-				break;
-			}
 
-			const float ymin = detections[detection_offset++]; // 框上边界
-			const float xmin = detections[detection_offset++]; // 框左边界
-			const float ymax = detections[detection_offset++]; // 框下边界
-			const float xmax = detections[detection_offset++]; // 框右边界
-			const float score = detections[detection_offset++]; // 置信度
+		for (int box_index = 0; box_index < box_count; ++box_index) { // 只遍历有数据的框
+			int box_base = class_base + 1 + (box_index * 5); // 每个框的绝对起始点
 
-			// 超过该类别有效数量，或分数太低，则跳过
-			if (box_index >= box_count || score < score_threshold) {
-				continue;
-			}
+			const float ymin  = detections[box_base + 0];
+			const float xmin  = detections[box_base + 1];
+			const float ymax  = detections[box_base + 2];
+			const float xmax  = detections[box_base + 3];
+			const float score = detections[box_base + 4];
+
+			if (score < score_threshold) continue;
 
 			// 某些模型给0~1归一化坐标，某些模型给像素坐标；这里做兼容
 			auto to_pixel_x = [&](float value) {
@@ -161,14 +207,12 @@ std::optional<std::vector<Detection>> ParseDetections(HailoContext& hailo_contex
 			const int x2 = std::max(0, std::min(to_pixel_x(xmax), target_w - 1));
 			const int y2 = std::max(0, std::min(to_pixel_y(ymax), target_h - 1));
 
-			// 非法框（右下在左上之前）直接丢弃
+			//非法框（右下在左上之前）直接丢弃
 			if (x2 <= x1 || y2 <= y1) {
 				continue;
 			}
 
-			const std::string label = (class_id >= 0 && class_id < static_cast<int>(class_names.size()))
-				? class_names[class_id]
-				: (std::string("cls ") + std::to_string(class_id));
+			const std::string label = class_names[class_id];
 
 			Detection det;
 			det.label = label;
@@ -181,21 +225,28 @@ std::optional<std::vector<Detection>> ParseDetections(HailoContext& hailo_contex
 	return std::make_optional(results);
 }
 
-cv::Mat Stream_process(const cv::Mat& BGR_frame, int target_w, int target_h){
-	const float scale = std::min(static_cast<float>(target_w) / BGR_frame.cols, static_cast<float>(target_h) / BGR_frame.rows);
+cv::Mat Stream_process(const cv::Mat& BGR_frame, int target_w, int target_h) {
+    // 计算缩放比例
+    const float scale = std::min(static_cast<float>(target_w) / BGR_frame.cols, static_cast<float>(target_h) / BGR_frame.rows);
 
-	const int new_w = static_cast<int>(BGR_frame.cols * scale);
-	const int new_h = static_cast<int>(BGR_frame.rows * scale);
-	const int x_offset = (target_w - new_w) / 2; // 水平方向偏移
-	const int y_offset = (target_h - new_h) / 2; // 垂直方向偏移
+    const int new_w = static_cast<int>(BGR_frame.cols * scale);
+    const int new_h = static_cast<int>(BGR_frame.rows * scale);
+    const int x_offset = (target_w - new_w) / 2;
+    const int y_offset = (target_h - new_h) / 2;
 
-	cv::resize(BGR_frame, BGR_frame, cv::Size(new_w, new_h));
+    // --- 修改点：不要在原图上 resize，创建一个中间变量 ---
+    cv::Mat resized_frame;
+    cv::resize(BGR_frame, resized_frame, cv::Size(new_w, new_h));
 
-	cv::Mat letterbox_bgr(target_h, target_w, CV_8UC3, cv::Scalar(0, 0, 0));
-	BGR_frame.copyTo(letterbox_bgr(cv::Rect(x_offset, y_offset, new_w, new_h)));
+    // 创建黑色背景
+    cv::Mat letterbox_bgr(target_h, target_w, CV_8UC3, cv::Scalar(114, 114, 114));
+    
+    // 将缩放后的图拷贝到黑色背景中心
+    resized_frame.copyTo(letterbox_bgr(cv::Rect(x_offset, y_offset, new_w, new_h)));
 
-	cv::Mat RGB_frame;
-	cv::cvtColor(letterbox_bgr, RGB_frame, cv::COLOR_BGR2RGB);
+    // 颜色空间转换 BGR -> RGB
+    cv::Mat RGB_frame;
+    cv::cvtColor(letterbox_bgr, RGB_frame, cv::COLOR_BGR2RGB);
 
-	return RGB_frame;
+    return RGB_frame;
 }

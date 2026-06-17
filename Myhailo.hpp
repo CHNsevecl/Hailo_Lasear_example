@@ -11,6 +11,14 @@
 #include <chrono>
 #include <hailo/hailort.hpp>
 
+const int target_w = 640;
+const int target_h = 640;
+const std::vector<std::string> class_names = {"Blue_Laser","Canvas"};
+const std::string hef_path = "/home/sevecl/Desktop/C/Hailo/hailo_Lasear_train(yolov8s)/build/yolov8s_for_BLasear_V1_2.hef";
+constexpr size_t expected_input = 640*640*3;
+const int max_boxes_per_class = 100; // 每个类别最多100个框
+const float score_threshold = 0.6f; // 画框阈值
+ 
 struct HailoContext {
     std::shared_ptr<hailort::VDevice> vdevice;
     std::shared_ptr<hailort::InferModel> infer_model;
